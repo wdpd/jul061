@@ -33,14 +33,14 @@ def randstr(length):
     return rand_str
 
 
-def epoch(people_list,start, step):
+def epoch(people_list, start, step):
     """Run an epoch and kill one people"""
-    people_alive = [x for x in people_list if x.alive]
+    people_alive = [x for x in people_list if x.alive]  # get the list of people who are alive
     start_index = people_alive.index(start)
-    next_start_index = (start_index + step) % len(people_alive)
-    to_kill_index = (start_index + step - 1) % len(people_alive)
+    next_start_index = (start_index + step) % len(people_alive)  # calculate where the next epoch starts
+    to_kill_index = (start_index + step - 1) % len(people_alive)    # calculate who is to be killed
     next_start = people_alive[next_start_index]
-    people_alive[to_kill_index].kill()
+    people_alive[to_kill_index].kill()      # kill him
     return next_start
 
 
@@ -52,6 +52,7 @@ def info_printer(input_list):
 
 
 def people_generator(people_num, name_length):
+    """To generate people with random information"""
     rand_name = [randstr(name_length) for i in range(people_num)]
     rand_gender = [random.choice(['Male', 'Female']) for i in range(people_num)]
     rand_age = [random.randint(1, 80) for i in range(people_num)]
@@ -60,6 +61,7 @@ def people_generator(people_num, name_length):
 
 
 def people_reader(filename):
+    """To read people information from file specified in PEOPLE_LIST_PATH"""
     with open(filename, 'rt') as file:
         csv_reader = csv.reader(file)
         people_raw = [x for x in csv_reader]
@@ -95,4 +97,4 @@ info_printer(people_info)
 print()
 info_printer(people_alive_info)
 
-assert([x.id for x in people_alive_info] == [7, 27, 38, 45, 62, 64, 82])
+assert ([x.id for x in people_alive_info] == [7, 27, 38, 45, 62, 64, 82])
