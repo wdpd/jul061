@@ -1,4 +1,5 @@
 import random
+import csv
 
 
 class People:
@@ -58,24 +59,40 @@ def people_generator(people_num, name_length):
     return people_list
 
 
-def josephus_problem(people_num, count_start, count_step, people_remain, name_length):
-    people_list = people_generator(people_num, name_length)
+def people_reader(filename):
+    with open(filename, 'rt') as file:
+        csv_reader = csv.reader(file)
+        people_raw = [x for x in csv_reader]
+    name = [x[1] for x in people_raw]
+    gender = [x[2] for x in people_raw]
+    age = [int(x[3]) for x in people_raw]
+    people_list = [People(name[i], gender[i], age[i]) for i in range(len(people_raw))]
+    return people_list
+
+
+def josephus_problem(people_num, count_start, count_step, people_remain, name_length=5, filename=''):
+    """To generate automatically, comment the 'people_reader' line.
+    To import from file people_list.csv, comment the 'people_generator' line,
+    and change the PEOPLE_LIST_PATH accordingly"""
+    # people_list = people_generator(people_num, name_length)
+    people_list = people_reader(filename)
     counting = people_list[count_start - 1]
     while People.people_num_alive > people_remain:
         counting = epoch(people_list, counting, count_step)
     return people_list
 
 
-PEOPLE_NUM = 10
-COUNT_START = 5
-COUNT_STEP = 3
+PEOPLE_NUM = 100
+COUNT_START = 53
+COUNT_STEP = 18
 PEOPLE_REMAIN = 7
 NAME_LENGTH = 5
+PEOPLE_LIST_PATH = 'c:\\Users\\karmo\\OneDrive\\Desktop\\python\\jul061\\people_list.csv'
 
-people_info = josephus_problem(PEOPLE_NUM, COUNT_START, COUNT_STEP, PEOPLE_REMAIN, NAME_LENGTH)
-people_alive_info = people_alive = [x for x in people_info if x.alive]
+people_info = josephus_problem(PEOPLE_NUM, COUNT_START, COUNT_STEP, PEOPLE_REMAIN, NAME_LENGTH, PEOPLE_LIST_PATH)
+people_alive_info = [x for x in people_info if x.alive]
 info_printer(people_info)
 print()
-info_printer(people_alive)
+info_printer(people_alive_info)
 
-assert([x.id for x in josephus_problem(PEOPLE_NUM, COUNT_START, COUNT_STEP, PEOPLE_REMAIN) if x.alive] == [1, 2, 4, 5, 6, 8, 9])
+assert([x.id for x in people_alive_info] == [7, 27, 38, 45, 62, 64, 82])
