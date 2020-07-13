@@ -1,6 +1,6 @@
 start = 1
 end = 30
-people = [x for x in range(start,end+1)]
+people = [x for x in range(start, end+1)]
 epoch_num = 7
 counting_list = 0
 counting_epoch = 1
