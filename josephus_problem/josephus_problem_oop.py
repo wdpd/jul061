@@ -24,6 +24,36 @@ class People:
         People.people_num_alive -= 1
 
 
+class Josephus:
+    """A Josephus Ring"""
+    def __init__(self):
+        self.people_list = []
+
+    def append(self, people):
+        self.people_list.append(people)
+
+    def extend(self, people):
+        self.people_list.extend(people)
+
+    def get(self, people_id):
+        return self.people_list[people_id-1]
+
+    def pop(self, people_id):
+        self.people_list.pop(people_id-1)
+
+    def __iter__(self):
+        self.iter_id = 1
+        return self
+
+    def __next__(self):
+        if self.iter_id <= len(self.people_list):
+            self.iter_id += 1
+            return self.people_list[self.iter_id]
+        else:
+            self.iter_id = 1
+            raise StopIteration()
+
+
 def randstr(length):
     """Generate random string for names"""
     str_dict = 'abcdefghijklmnopqrstuvwxyz'
