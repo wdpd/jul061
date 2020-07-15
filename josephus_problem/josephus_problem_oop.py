@@ -38,8 +38,21 @@ class Josephus:
     def get(self, people_id):
         return self.people_list[people_id-1]
 
+    def get_people_alive_num(self):
+        people_alive = [x for x in self.people_list if x.alive]
+        return len(people_alive)
+
+    def alive(self, people_id):
+        return self.people_list[people_id-1].alive
+
+    def kill(self, people_id):
+        self.people_list[people_id-1].kill()
+
     def pop(self, people_id):
         self.people_list.pop(people_id-1)
+
+    def __len__(self):
+        return len(self.people_list)
 
     def __iter__(self):
         self.iter_id = 1
@@ -47,8 +60,9 @@ class Josephus:
 
     def __next__(self):
         if self.iter_id <= len(self.people_list):
+            iter_id_current = self.iter_id
             self.iter_id += 1
-            return self.people_list[self.iter_id]
+            return self.people_list[iter_id_current-1]
         else:
             self.iter_id = 1
             raise StopIteration()
@@ -63,14 +77,14 @@ def randstr(length):
     return rand_str
 
 
-def epoch(people_list, start, step):
+def epoch(josephus_ring, start, step):
     """Run an epoch and kill one people"""
-    people_alive = [x for x in people_list if x.alive]  # get the list of people who are alive
+    people_alive = [x for x in josephus_ring if x.alive]  # get the list of people who are alive
     start_index = people_alive.index(start)
     next_start_index = (start_index + step) % len(people_alive)  # calculate where the next epoch starts
     to_kill_index = (start_index + step - 1) % len(people_alive)    # calculate who is to be killed
     next_start = people_alive[next_start_index]
-    people_alive[to_kill_index].kill()      # kill him
+    josephus_ring.kill(people_alive[to_kill_index].id)      # kill him
     return next_start
 
 
@@ -86,8 +100,10 @@ def people_generator(people_num, name_length):
     rand_name = [randstr(name_length) for i in range(people_num)]
     rand_gender = [random.choice(['Male', 'Female']) for i in range(people_num)]
     rand_age = [random.randint(1, 80) for i in range(people_num)]
+    josephus_ring = Josephus()
     people_list = [People(rand_name[i], rand_gender[i], rand_age[i]) for i in range(people_num)]
-    return people_list
+    josephus_ring.extend(people_list)
+    return josephus_ring
 
 
 def people_reader(filename):
@@ -98,20 +114,22 @@ def people_reader(filename):
     name = [x[1] for x in people_raw]
     gender = [x[2] for x in people_raw]
     age = [int(x[3]) for x in people_raw]
+    josephus_ring = Josephus()
     people_list = [People(name[i], gender[i], age[i]) for i in range(len(people_raw))]
-    return people_list
+    josephus_ring.extend(people_list)
+    return josephus_ring
 
 
 def josephus_problem(people_num, count_start, count_step, people_remain, name_length=5, filename=''):
     """To generate automatically, comment the 'people_reader' line.
     To import from file people_list.csv, comment the 'people_generator' line,
     and change the PEOPLE_LIST_PATH accordingly"""
-    # people_list = people_generator(people_num, name_length)
-    people_list = people_reader(filename)
-    counting = people_list[count_start - 1]
-    while People.people_num_alive > people_remain:
-        counting = epoch(people_list, counting, count_step)
-    return people_list
+    # josephus_ring = people_generator(people_num, name_length)
+    josephus_ring = people_reader(filename)
+    counting = josephus_ring.get(count_start)
+    while josephus_ring.get_people_alive_num() > people_remain:
+        counting = epoch(josephus_ring, counting, count_step)
+    return josephus_ring
 
 
 PEOPLE_NUM = 100
@@ -123,7 +141,7 @@ PEOPLE_LIST_PATH = 'c:\\Users\\karmo\\OneDrive\\Desktop\\python\\jul061\\people_
 
 people_info = josephus_problem(PEOPLE_NUM, COUNT_START, COUNT_STEP, PEOPLE_REMAIN, NAME_LENGTH, PEOPLE_LIST_PATH)
 people_alive_info = [x for x in people_info if x.alive]
-info_printer(people_info)
+info_printer([x for x in people_info])
 print()
 info_printer(people_alive_info)
 
