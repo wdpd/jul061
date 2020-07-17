@@ -165,7 +165,7 @@ COUNT_START = 53
 COUNT_STEP = 18
 PEOPLE_REMAIN = 7
 NAME_LENGTH = 5
-PEOPLE_LIST_PATH = 'c:\\Users\\karmo\\OneDrive\\Desktop\\python\\jul061\\people_list.csv'
+PEOPLE_LIST_PATH = 'people_list.csv'
 
 people_info = josephus_problem(PEOPLE_NUM, COUNT_START, COUNT_STEP, PEOPLE_REMAIN, NAME_LENGTH, PEOPLE_LIST_PATH)
 people_alive_info = [x for x in people_info if x.alive]
