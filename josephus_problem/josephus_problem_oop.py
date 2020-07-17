@@ -68,6 +68,30 @@ class Josephus:
             raise StopIteration()
 
 
+class Reader:
+    def __init__(self, filename):
+        self.filename = filename
+        self.people_raw = []
+
+    def csv_reader(self):
+        with open(self.filename, 'rt') as file:
+            csv_reader = csv.reader(file)
+            self.people_raw = [x for x in csv_reader]
+        return self.formatter()
+
+    def txt_reader(self, split):
+        with open(self.filename, 'rt') as file:
+            self.people_raw = [x for x in file.readlines()]
+        return self.formatter()
+
+    def formatter(self):
+        name = [x[1] for x in self.people_raw]
+        gender = [x[2] for x in self.people_raw]
+        age = [int(x[3]) for x in self.people_raw]
+        people_list = [People(name[i], gender[i], age[i]) for i in range(len(self.people_raw))]
+        return people_list
+
+
 def randstr(length):
     """Generate random string for names"""
     str_dict = 'abcdefghijklmnopqrstuvwxyz'
@@ -108,6 +132,7 @@ def people_generator(people_num, name_length):
 
 def people_reader(filename):
     """To read people information from file specified in PEOPLE_LIST_PATH"""
+    """
     with open(filename, 'rt') as file:
         csv_reader = csv.reader(file)
         people_raw = [x for x in csv_reader]
@@ -116,6 +141,9 @@ def people_reader(filename):
     age = [int(x[3]) for x in people_raw]
     josephus_ring = Josephus()
     people_list = [People(name[i], gender[i], age[i]) for i in range(len(people_raw))]
+    """
+    people_list = Reader(filename).csv_reader()
+    josephus_ring = Josephus()
     josephus_ring.extend(people_list)
     return josephus_ring
 
